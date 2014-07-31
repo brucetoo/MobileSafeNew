@@ -51,8 +51,10 @@
         <activity android:name=".CallSmsSafeActivity"/>
         <activity android:name=".AppManagerActivity"/>
         <activity android:name=".TaskManagerActivity"/>
+        <activity android:name=".TaskSettingActivity"/>
 
         <service android:name=".service.CallSmsSafeService"/>
+        <service android:name=".service.ScreenOffService"/>
         <receiver android:name=".receiver.BootCompleteReceiver">
             <intent-filter>
                 <!--注册开机的广播-->

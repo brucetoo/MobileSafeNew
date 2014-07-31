@@ -2,6 +2,8 @@ package com.itheima.mobilesafe;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.Formatter;
@@ -36,6 +38,8 @@ public class TaskManagerActivity extends Activity {
     private TaskManagerAdapter adapter;
     private TextView tv_status;
 
+    private SharedPreferences sp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +47,7 @@ public class TaskManagerActivity extends Activity {
 
         tv_process_count = (TextView) findViewById(R.id.tv_process_count);
         tv_mem_info = (TextView) findViewById(R.id.tv_mem_info);
-
+        sp = getSharedPreferences("config", MODE_PRIVATE);
         manageTitle();
 
         ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
@@ -89,7 +93,7 @@ public class TaskManagerActivity extends Activity {
                 }
 
                 //当点击自身应用时，屏蔽掉点击事件
-                if(getPackageName().equals(taskInfo.packageName)){
+                if (getPackageName().equals(taskInfo.packageName)) {
                     return;
                 }
 
@@ -153,11 +157,15 @@ public class TaskManagerActivity extends Activity {
     /**
      * 进程管理的适配器
      */
-    private class TaskManagerAdapter extends BaseAdapter {
+        private class TaskManagerAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return allTaskInfo.size() + 2;
+            if (sp.getBoolean("ischecked", false)) {  //显示系统程序进程
+                return allTaskInfo.size() + 2;
+            } else {
+                 return  userTaskInfo.size() +1;  //只显示用户进程
+            }
         }
 
         @Override
@@ -205,9 +213,9 @@ public class TaskManagerActivity extends Activity {
             holder.ck_task_check.setChecked(taskInfo.checked);
 
             //当前条目为自身时，让 checkbox 不可见
-            if(getPackageName().equals(taskInfo.packageName)){
+            if (getPackageName().equals(taskInfo.packageName)) {
                 holder.ck_task_check.setVisibility(View.INVISIBLE);
-            }else{
+            } else {
                 holder.ck_task_check.setVisibility(View.VISIBLE);
             }
             return view;
@@ -242,7 +250,7 @@ public class TaskManagerActivity extends Activity {
      */
     public void selectAll(View view) {
         for (TaskInfo info : userTaskInfo) {
-            if(getPackageName().equals(info.packageName)){
+            if (getPackageName().equals(info.packageName)) {
                 continue;
             }
             info.checked = true;
@@ -293,7 +301,7 @@ public class TaskManagerActivity extends Activity {
         Toast.makeText(this, "您一共杀死了" + count + "个进程，一共清理内存" + Formatter.formatFileSize(this, saveMem), Toast.LENGTH_SHORT).show();
 
         tv_process_count.setText("运行中的进程:" + allTaskInfo.size() + "个");
-        tv_mem_info.setText("剩余/总内存:" + Formatter.formatFileSize(this, saveMem+SystemInfoUtils.getAvailMem(this)) + "/" +
+        tv_mem_info.setText("剩余/总内存:" + Formatter.formatFileSize(this, saveMem + SystemInfoUtils.getAvailMem(this)) + "/" +
                                     Formatter.formatFileSize(this, SystemInfoUtils.getTotalMem(this)));
     }
 
@@ -304,6 +312,14 @@ public class TaskManagerActivity extends Activity {
      */
     public void enterSetting(View view) {
 
+        Intent intent = new Intent(this, TaskSettingActivity.class);
+        startActivityForResult(intent, 0);
     }
 
+    //进入设置后，更新界面
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        adapter.notifyDataSetChanged();
+    }
 }
