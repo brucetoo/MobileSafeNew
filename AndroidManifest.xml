@@ -53,6 +53,7 @@
         <activity android:name=".AppManagerActivity"/>
         <activity android:name=".TaskManagerActivity"/>
         <activity android:name=".TaskSettingActivity"/>
+        <activity android:name=".EnterPwdActivity"/>
 
         <service android:name=".service.CallSmsSafeService"/>
         <service android:name=".service.ScreenOffService"/>
