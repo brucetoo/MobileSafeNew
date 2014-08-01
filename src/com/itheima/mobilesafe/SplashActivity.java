@@ -48,7 +48,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
         sp = getSharedPreferences("config", MODE_PRIVATE);
         tv_splash_version = (TextView) findViewById(R.id.tv_splash_version);
-        tv_splash_version.setText("°æ±¾ºÅ" + getVersionName());
+        tv_splash_version.setText("Version:" + getVersionName());
         tv_update_info = (TextView) findViewById(R.id.tv_update_info);
         boolean update = sp.getBoolean("update", false);
 

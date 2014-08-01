@@ -34,4 +34,13 @@
         android:layout_height="wrap_content" >
     </com.itheima.mobilesafe.ui.SettingItemView>
 
+    <com.itheima.mobilesafe.ui.SettingItemView
+        bruce:title="程序看门狗设置"
+        bruce:desc_on="开启看门狗"
+        bruce:desc_off="关闭看门狗"
+        android:id="@+id/siv_watchdog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </com.itheima.mobilesafe.ui.SettingItemView>
+
 </LinearLayout>

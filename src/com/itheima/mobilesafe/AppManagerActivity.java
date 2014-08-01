@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.widget.*;
+import com.itheima.mobilesafe.db.dao.AppLockDao;
 import com.itheima.mobilesafe.domain.AppInfo;
 import com.itheima.mobilesafe.engine.AppInfoProvider;
 import com.itheima.mobilesafe.utils.DensityUtil;
@@ -39,6 +40,8 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
     private LinearLayout ll_loading;
     private List<AppInfo> appInfos;
     private AppManagerAdapter adapter;
+
+    private AppLockDao dao;
 
     /**
      * 手机中的应用程序
@@ -83,12 +86,12 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         lv_app_manager = (ListView) findViewById(R.id.lv_app_manager);
         ll_loading = (LinearLayout) findViewById(R.id.ll_loading);
         tv_status = (TextView) findViewById(R.id.tv_status);
-
+         dao = new AppLockDao(this);
         long sdsize = getAvailSpace(Environment.getExternalStorageDirectory().getAbsolutePath());
         long romsize = getAvailSpace(Environment.getDataDirectory().getAbsolutePath());
 
-        tv_avail_rom.setText("SD可用空间：" + Formatter.formatFileSize(this, sdsize));
-        tv_avail_sd.setText("ROM可用空间：" + Formatter.formatFileSize(this, romsize));
+        tv_avail_rom.setText("SD Avail:" + Formatter.formatFileSize(this, sdsize));
+        tv_avail_sd.setText("ROM Avail:" + Formatter.formatFileSize(this, romsize));
 
 
         fillData();  //填充数据
@@ -106,9 +109,9 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
                 closePopWindow();
                 if (userInfos != null && systemInfos != null) {
                     if (firstVisibleItem <= userInfos.size()) {
-                        tv_status.setText("用户程序： （" + userInfos.size() + ") 个");
+                        tv_status.setText("user App:" + userInfos.size());
                     } else {
-                        tv_status.setText("系统程序： （" + systemInfos.size() + ") 个");
+                        tv_status.setText("System App:" + systemInfos.size());
                     }
                 }
             }
@@ -174,6 +177,38 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
             }
         });
 
+
+        //按ListView 长按：是否锁定程序
+        lv_app_manager.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0 || position == userInfos.size() + 1) {
+                    return true;//true 表示截断点击事件
+                } else if (position <= userInfos.size()) {//用户程序
+                    int newposition = position - 1;
+                    appInfo = userInfos.get(newposition);
+                } else {                                  //系统程序
+                    int newposition = position - 1 - userInfos.size() - 1;
+                    appInfo = systemInfos.get(newposition);
+                }
+              ViewHolder holder = (ViewHolder) view.getTag();
+            //如果数据库中存在，则移除，反之添加
+                if(dao.findApp(appInfo.getPackagename())){
+                    dao.deleteApp(appInfo.getPackagename());
+                    //记得更新界面
+                    holder.iv_status.setImageResource(R.drawable.unlock);
+                    adapter.notifyDataSetChanged();
+                }else{
+                    dao.addApp(appInfo.getPackagename());
+                    //记得更新界面
+                    holder.iv_status.setImageResource(R.drawable.lock);
+                    adapter.notifyDataSetChanged();
+                }
+
+                return true;
+            }
+        });
+
     }
 
     /**
@@ -190,7 +225,7 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
                 userInfos = new ArrayList<AppInfo>();
                 systemInfos = new ArrayList<AppInfo>();
                 for (AppInfo info : appInfos) {
-                    if (info.isInRom()) {
+                    if (info.isUserApp()) {
                         userInfos.add(info);
                     } else {
                         systemInfos.add(info);
@@ -200,10 +235,10 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(adapter == null){
+                        if (adapter == null) {
                             adapter = new AppManagerAdapter();
                             lv_app_manager.setAdapter(adapter);
-                        }else{
+                        } else {
                             adapter.notifyDataSetChanged();
                         }
 
@@ -228,10 +263,10 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         switch (v.getId()) {
             case R.id.ll_uninstall:
                 closePopWindow();
-                if(appInfo.isUserApp()){
+                if (appInfo.isUserApp()) {
                     uninstallApplication(appInfo.getPackagename());
-                }else{
-                    Toast.makeText(getApplicationContext(),"系统用户只有在root权限下才能卸载！！",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "you dont root ur phone!", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -250,6 +285,7 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
 
     /**
      * 应用的分享
+     *
      * @param packagename
      */
     private void shareApplication(String packagename) {
@@ -258,12 +294,13 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         intent.setAction("android.intent.action.SEND");
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT,"我他么给你推荐个软件，干不？---"+appInfo.getName());
+        intent.putExtra(Intent.EXTRA_TEXT, "a good app introduce to u,no thanks" + appInfo.getName());
         startActivity(intent);
     }
 
     /**
      * 卸载 程序，并刷新 listView
+     *
      * @param packagename
      */
     private void uninstallApplication(String packagename) {
@@ -272,10 +309,10 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         intent.setAction("android.intent.action.VIEW");
         intent.setAction("android.intent.action.DELETE");
         intent.addCategory("android.intent.category.DEFAULT");
-        intent.setData(Uri.parse("package:"+packagename));
+        intent.setData(Uri.parse("package:" + packagename));
 
         //启动卸载程序，刷新数据
-        startActivityForResult(intent,0);
+        startActivityForResult(intent, 0);
     }
 
     @Override
@@ -287,6 +324,7 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
 
     /**
      * 通过packagename获取程序
+     *
      * @param packagename
      */
     private void startApplication(String packagename) {
@@ -295,8 +333,8 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         Intent intent = pm.getLaunchIntentForPackage(packagename);
         if (intent != null) {
             startActivity(intent);
-        }else{
-            Toast.makeText(this,"对不起，没法启动应用",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "对不起，没法启动应用", Toast.LENGTH_SHORT).show();
         }
 
        /* *//**
@@ -317,7 +355,7 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         }*/
     }
 
-    private class   AppManagerAdapter extends BaseAdapter {
+    private class AppManagerAdapter extends BaseAdapter {
         /**
          * 该方法是返回listview的总个数的
          * 在listview中增加item，该位置也要变
@@ -347,13 +385,13 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
 
             if (position == 0) {
                 TextView textView = new TextView(AppManagerActivity.this);
-                textView.setText("用户程序： （" + userInfos.size() + "）个");
+                textView.setText("User app:" + userInfos.size());
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.GRAY);
                 return textView;
             } else if (position == (userInfos.size() + 1)) {
                 TextView textView = new TextView(AppManagerActivity.this);
-                textView.setText("系统程序： （" + systemInfos.size() + "）个");
+                textView.setText("System app:" + systemInfos.size());
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.GRAY);
                 return textView;
@@ -377,17 +415,25 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
                 holder.iv_icon = (ImageView) view.findViewById(R.id.iv_app_icon);
                 holder.tv_name = (TextView) view.findViewById(R.id.iv_app_name);
                 holder.tv_location = (TextView) view.findViewById(R.id.iv_app_location);
+                holder.iv_status = (ImageView) view.findViewById(R.id.iv_status);
                 view.setTag(holder);
             }
 
             holder.iv_icon.setImageDrawable(appInfo.getIcon());
             holder.tv_name.setText(appInfo.getName());
 
-            /*  android:installLocation="preferExternal" 安装的时候优先安装到外部存储*/
+    /*  android:installLocation="preferExternal" 安装的时候优先安装到外部存储*/
             if (appInfo.isInRom()) {
-                holder.tv_location.setText("手机内存");
+                holder.tv_location.setText("Phone Rom");
             } else {
-                holder.tv_location.setText("外部存储");
+                holder.tv_location.setText("External SD");
+            }
+
+            //如果数据库中保存了该程序，这锁定
+            if(dao.findApp(appInfo.getPackagename())){
+                holder.iv_status.setImageResource(R.drawable.lock);
+            }else {
+                holder.iv_status.setImageResource(R.drawable.unlock);
             }
 
             return view;
@@ -398,6 +444,7 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
         TextView tv_name;
         TextView tv_location;
         ImageView iv_icon;
+        ImageView iv_status;
     }
 
     /**

@@ -12,17 +12,20 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.TextView;
 import com.itheima.mobilesafe.service.AddressService;
+import com.itheima.mobilesafe.service.WatchDogService;
 import com.itheima.mobilesafe.ui.SettingItemView;
+import com.itheima.mobilesafe.utils.ServiceStatusUtils;
 
 public class SettingActivity extends Activity {
-    //设置自动更新
+    //???????????
     private SettingItemView siv_update;
-    //设置来电显示
+    //???????????
     private SettingItemView siv_call_show;
     private SharedPreferences sp;
-
+    private Intent watchDogIntent;
     private Intent intent;
 
+    private SettingItemView siv_watchdog;
     private WindowManager wm;
     private View view;
     @Override
@@ -35,36 +38,60 @@ public class SettingActivity extends Activity {
 
         boolean update = sp.getBoolean("update", false);
         if (update) {
-            //自动升级已经开启
+            //????????????
             siv_update.setChecked(true);
-            //	siv_update.setDesc("自动升级已经开启");
+            //	siv_update.setDesc("????????????");
         } else {
-            //自动升级已经关闭
+            //???????????
             siv_update.setChecked(false);
-            //	siv_update.setDesc("自动升级已经关闭");
+            //	siv_update.setDesc("???????????");
         }
         siv_update.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Editor editor = sp.edit();
-                //判断是否有选中
-                //已经打开自动升级了
+                //?鎼傝劥?????????
+                //????????????
                 if (siv_update.isChecked()) {
                     siv_update.setChecked(false);
-                    //		siv_update.setDesc("自动升级已经关闭");
+                    //		siv_update.setDesc("???????????");
                     editor.putBoolean("update", false);
 
                 } else {
-                    //没有打开自动升级
+                    //??鎼傝劗??????
                     siv_update.setChecked(true);
-                    //		siv_update.setDesc("自动升级已经开启");
+                    //		siv_update.setDesc("????????????");
                     editor.putBoolean("update", true);
                 }
                 editor.commit();
             }
         });
-        //设置是否自动更新
+
+        siv_watchdog = (SettingItemView) findViewById(R.id.siv_watchdog);
+        if(ServiceStatusUtils.isServiceRunning(this,"com.itheima.mobilesafe.service.WatchDogService")){
+            siv_watchdog.setChecked(true);
+        }else{
+            siv_watchdog.setChecked(false);
+        }
+        watchDogIntent = new Intent(SettingActivity.this, WatchDogService.class);
+        siv_watchdog.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (siv_watchdog.isChecked()) {
+                    siv_watchdog.setChecked(false);
+                    stopService(watchDogIntent);
+                } else {
+                    siv_watchdog.setChecked(true);
+                    startService(watchDogIntent);
+                }
+            }
+        });
+
+
+
         siv_call_show = (SettingItemView) findViewById(R.id.siv_call_show);
         intent = new Intent(SettingActivity.this, AddressService.class);
 
@@ -74,11 +101,11 @@ public class SettingActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(siv_call_show.isChecked()){ //服务已近开启
+                if(siv_call_show.isChecked()){ //?????????
                     siv_call_show.setChecked(false);
                     //stopService(intent);
 
-                }else{ //没有开启服务
+                }else{ //??鎼傝癌???????
                     siv_call_show.setChecked(true);
 
                     showToast("wo caini ma!");
@@ -93,7 +120,7 @@ public class SettingActivity extends Activity {
                 textView.setText(s);
                 view.setBackgroundResource(R.drawable.call_locate_blue);
 
-                //窗体的设置
+                //?????????
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams();
                 params.height = WindowManager.LayoutParams.WRAP_CONTENT;
                 params.width = WindowManager.LayoutParams.WRAP_CONTENT;

@@ -19,9 +19,9 @@ public class HomeActivity extends Activity {
     private SharedPreferences sp;
 
     private static String[] names = {
-            "ÊÖ»ú·ÀµÁ", "Í¨Ñ¶ÎÀÊ¿", "Èí¼ş¹ÜÀí",
-            "½ø³Ì¹ÜÀí", "Á÷Á¿Í³¼Æ", "ÊÖ»úÉ±¶¾",
-            "»º´æÇåÀí", "¸ß¼¶¹¤¾ß", "ÉèÖÃÖĞĞÄ"
+            "æ‰‹æœºé˜²ç›—", "é€šè®¯å«å£«", "è½¯ä»¶ç®¡ç†",
+            "è¿›ç¨‹ç®¡ç†", "æµé‡ç»Ÿè®¡", "æ‰‹æœºæ€æ¯’",
+            "ç¼“å­˜æ¸…ç†", "é«˜çº§å·¥å…·", "è®¾ç½®ä¸­å¿ƒ"
 
     };
 
@@ -49,27 +49,27 @@ public class HomeActivity extends Activity {
                                     int position, long id) {
                 Intent intent;
                 switch (position) {
-                    case 8://½øÈëÉèÖÃÖĞĞÄ
+                    case 8://è¿›å…¥è®¾ç½®ä¸­å¿ƒ
                         intent = new Intent(HomeActivity.this, SettingActivity.class);
                         startActivity(intent);
                         break;
-                    case 7://½øÈë¹¤¾ßÖĞĞÄ
+                    case 7://è¿›å…¥å·¥å…·ä¸­å¿ƒ
                         intent = new Intent(HomeActivity.this, AToolsActivity.class);
                         startActivity(intent);
                         break;
-                    case 1://½øÈëÍ¨Ñ¶ÎÀÊ¿
+                    case 1://è¿›å…¥é€šè®¯å«å£«
                         intent = new Intent(HomeActivity.this, CallSmsSafeActivity.class);
                         startActivity(intent);
                         break;
-                    case 2://½øÈëÈí¼ş¹ÜÀí
+                    case 2://è¿›å…¥è½¯ä»¶ç®¡ç†
                         intent = new Intent(HomeActivity.this, AppManagerActivity.class);
                         startActivity(intent);
                         break;
-                    case 3://½øÈë½ø³Ì¹ÜÀí
+                    case 3://è¿›å…¥è¿›ç¨‹ç®¡ç†
                         intent = new Intent(HomeActivity.this, TaskManagerActivity.class);
                         startActivity(intent);
                         break;
-                    case 0: //½øÈë·ÀµÁÉèÖÃ
+                    case 0: //è¿›å…¥é˜²ç›—è®¾ç½®
                         showLastFoundDialog();
                         break;
                     default:
@@ -82,7 +82,7 @@ public class HomeActivity extends Activity {
 
     private void showLastFoundDialog() {
 
-        //ÅĞ¶ÏÊÇ·ñÉèÖÃ¹ıÃÜÂë
+        //åˆ¤æ–­æ˜¯å¦è®¾ç½®è¿‡å¯†ç 
         if (isSetupPsd()) {
             showEnterDialog();
         } else {
@@ -99,23 +99,23 @@ public class HomeActivity extends Activity {
     private AlertDialog dialog;
 
     /**
-     * ÉèÖÃÃÜÂë¶Ô»°¿ò
+     *  è®¾ç½®å¯†ç å¯¹è¯æ¡†
      */
     private void showSetupDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //×Ô¶¨ÒåÒ»¸ö´øÓĞÊäÈë¿òµÄ¶Ô»°¿ò
+        //è‡ªå®šä¹‰ä¸€ä¸ªå¸¦æœ‰è¾“å…¥æ¡†çš„å¯¹è¯æ¡†
         View view = View.inflate(this, R.layout.dialog_setup_password, null);
         et_setup_pwd = (EditText) view.findViewById(R.id.et_setup_pwd);
         et_setup_confirm = (EditText) view.findViewById(R.id.et_setup_confirm);
         ok = (Button) view.findViewById(R.id.ok);
-        //È¡³öÃÜÂë
+        //å–å‡ºå¯†ç 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String password = et_setup_pwd.getText().toString().trim();
                 String confirm = et_setup_confirm.getText().toString().trim();
                 if (TextUtils.isEmpty(password) || TextUtils.isEmpty(confirm)) {
-                    Toast.makeText(HomeActivity.this, "ÃÜÂë²»ÄÜÎª¿Õ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(HomeActivity.this, "å¯†ç ä¸èƒ½ä¸ºç©º", Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (password.equals(confirm)) {
@@ -123,11 +123,11 @@ public class HomeActivity extends Activity {
                     sp.edit().putString("password", MD5Utils.md5Password(password)).commit();
                     dialog.dismiss();
 
-                    //Ìø×ªÒ³Ãæ
+                    //è·³è½¬é¡µé¢
                     Intent intent = new Intent(HomeActivity.this, LostFindActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(HomeActivity.this, "ÃÜÂë²»Ò»ÖÂ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(HomeActivity.this, "å¯†ç ä¸ä¸€è‡´", Toast.LENGTH_LONG).show();
                     return;
                 }
             }
@@ -140,36 +140,36 @@ public class HomeActivity extends Activity {
             }
         });
         //builder.setView(view);
-        //·µ»Ødialog
+        //è¿”å›dialog
         dialog = builder.create();
         dialog.setView(view, 0, 0, 0, 0);
         dialog.show();
     }
 
     /**
-     * ÏÔÊ¾ ÊäÈëÃÜÂë¶Ô»°¿ò
+     * æ˜¾ç¤º è¾“å…¥å¯†ç å¯¹è¯æ¡†
      */
     private void showEnterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //×Ô¶¨ÒåÒ»¸ö´øÓĞÊäÈë¿òµÄ¶Ô»°¿ò
+        //è‡ªå®šä¹‰ä¸€ä¸ªå¸¦æœ‰è¾“å…¥æ¡†çš„å¯¹è¯æ¡†
         View view = View.inflate(this, R.layout.dialog_enter_password, null);
         et_setup_pwd = (EditText) view.findViewById(R.id.et_enter_pwd);
         ok = (Button) view.findViewById(R.id.ok);
-        //È¡³öÃÜÂë
+        //å–å‡ºå¯†ç 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String password = et_setup_pwd.getText().toString().trim();
-                //ÃÜÂëÆ¥Åä³É¹¦
+                //å¯†ç åŒ¹é…æˆåŠŸ
                 if (MD5Utils.md5Password(password).equals(sp.getString("password", null))) {
 
                     dialog.dismiss();
                     Intent intent = new Intent(HomeActivity.this, LostFindActivity.class);
                     startActivity(intent);
                     //  Toast.makeText(HomeActivity.this, "caomima", Toast.LENGTH_LONG).show();
-                    //½øÈëÖ÷Ò³Ãæ
-                } else { //Æ¥ÅäÊ§°Ü
-                    Toast.makeText(HomeActivity.this, "ÃÜÂë´íÎó", Toast.LENGTH_LONG).show();
+                    //è¿›å…¥ä¸»é¡µé¢
+                } else { //åŒ¹é…å¤±è´¥
+                    Toast.makeText(HomeActivity.this, "å¯†ç é”™è¯¯", Toast.LENGTH_LONG).show();
                     return;
                 }
             }
@@ -182,13 +182,13 @@ public class HomeActivity extends Activity {
             }
         });
         builder.setView(view);
-        //·µ»Ødialog
+        //ï¿½ï¿½ï¿½ï¿½dialog
         dialog = builder.show();
         dialog.setView(view, 0, 0, 0, 0);
     }
 
     /**
-     * ÅĞ¶ÏÊÇ·ñÒÑ¾­ÉèÖÃ¹ıÃÜÂë
+     * åˆ¤æ–­æ˜¯å¦å·²ç»è®¾ç½®è¿‡å¯†ç 
      *
      * @return
      */

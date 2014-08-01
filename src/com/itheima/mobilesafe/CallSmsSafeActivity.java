@@ -141,11 +141,11 @@ public class CallSmsSafeActivity extends Activity {
             holder.tv_number.setText(info.get(position).number);
             String mode = info.get(position).mode;
             if ("1".equals(mode)) {
-                holder.tv_mode.setText("拦截电话");
+                holder.tv_mode.setText("Interept phone");
             } else if ("2".equals(mode)) {
-                holder.tv_mode.setText("拦截短信");
+                holder.tv_mode.setText("Interept MSG");
             } else {
-                holder.tv_mode.setText("拦截电话和短信");
+                holder.tv_mode.setText("Interept MSG/phone");
             }
 
            final int pos = position;

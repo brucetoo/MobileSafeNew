@@ -68,9 +68,9 @@ public class TaskManagerActivity extends Activity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (userTaskInfo != null && systemTaskInfo != null) {
                     if (firstVisibleItem <= userTaskInfo.size()) {
-                        tv_status.setText("用户进程： （" + userTaskInfo.size() + ") 个");
+                        tv_status.setText("User Ram:" + userTaskInfo.size());
                     } else {
-                        tv_status.setText("系统进程： （" + systemTaskInfo.size() + "）个");
+                        tv_status.setText("System Ram:" + systemTaskInfo.size());
                     }
                 }
             }
@@ -112,8 +112,8 @@ public class TaskManagerActivity extends Activity {
     }
 
     private void manageTitle() {
-        tv_process_count.setText("运行中的进程:" + SystemInfoUtils.getRunningProcessCount(this) + "个");
-        tv_mem_info.setText("剩余/总内存:" + Formatter.formatFileSize(this, SystemInfoUtils.getAvailMem(this)) + "/" +
+        tv_process_count.setText("Running Ram:" + SystemInfoUtils.getRunningProcessCount(this));
+        tv_mem_info.setText("Avail/Total Ram:" + Formatter.formatFileSize(this, SystemInfoUtils.getAvailMem(this)) + "/" +
                                     Formatter.formatFileSize(this, SystemInfoUtils.getTotalMem(this)));
     }
 
@@ -173,13 +173,13 @@ public class TaskManagerActivity extends Activity {
             TaskInfo taskInfo;
             if (position == 0) {//用户程序标签
                 TextView textView = new TextView(TaskManagerActivity.this);
-                textView.setText("用户进程：（" + userTaskInfo.size() + "）个");
+                textView.setText("User Ram:" + userTaskInfo.size());
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.GRAY);
                 return textView;
             } else if (position == userTaskInfo.size() + 1) {
                 TextView textView = new TextView(TaskManagerActivity.this);
-                textView.setText("系统进程： （" + systemTaskInfo.size() + "）个");
+                textView.setText("User Ram:" + systemTaskInfo.size());
                 textView.setTextColor(Color.WHITE);
                 textView.setBackgroundColor(Color.GRAY);
                 return textView;
@@ -298,10 +298,10 @@ public class TaskManagerActivity extends Activity {
         }
         adapter.notifyDataSetChanged();
         allTaskInfo.removeAll(killedTaskInfo);
-        Toast.makeText(this, "您一共杀死了" + count + "个进程，一共清理内存" + Formatter.formatFileSize(this, saveMem), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "you kill" + count + "s apps,free " + Formatter.formatFileSize(this, saveMem), Toast.LENGTH_SHORT).show();
 
-        tv_process_count.setText("运行中的进程:" + allTaskInfo.size() + "个");
-        tv_mem_info.setText("剩余/总内存:" + Formatter.formatFileSize(this, saveMem + SystemInfoUtils.getAvailMem(this)) + "/" +
+        tv_process_count.setText("Running apps:" + allTaskInfo.size());
+        tv_mem_info.setText("Avail/Total Ram:" + Formatter.formatFileSize(this, saveMem + SystemInfoUtils.getAvailMem(this)) + "/" +
                                     Formatter.formatFileSize(this, SystemInfoUtils.getTotalMem(this)));
     }
 

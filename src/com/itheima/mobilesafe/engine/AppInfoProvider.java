@@ -36,7 +36,6 @@ public class AppInfoProvider {
             Drawable icon = packageInfo.applicationInfo.loadIcon(pm); //获取Icon
             String name = packageInfo.applicationInfo.loadLabel(pm).toString();//获取名字
 
-
             AppInfo appInfo = new AppInfo();
             int flag = packageInfo.applicationInfo.flags;//获取应用程序的标示
              /*  android:installLocation="preferExternal" 安装的时候优先安装到外部存储*/
