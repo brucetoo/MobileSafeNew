@@ -53,7 +53,8 @@
         <activity android:name=".AppManagerActivity"/>
         <activity android:name=".TaskManagerActivity"/>
         <activity android:name=".TaskSettingActivity"/>
-        <activity android:name=".EnterPwdActivity"/>
+        <activity android:name=".EnterPwdActivity"
+            android:launchMode="singleInstance"/>
 
         <service android:name=".service.CallSmsSafeService"/>
         <service android:name=".service.ScreenOffService"/>
