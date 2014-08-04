@@ -69,6 +69,10 @@ public class HomeActivity extends Activity {
                         intent = new Intent(HomeActivity.this, TaskManagerActivity.class);
                         startActivity(intent);
                         break;
+                    case 4://流量管理
+                        intent = new Intent(HomeActivity.this, TrafficStatActivity.class);
+                        startActivity(intent);
+                        break;
                     case 0: //进入防盗设置
                         showLastFoundDialog();
                         break;

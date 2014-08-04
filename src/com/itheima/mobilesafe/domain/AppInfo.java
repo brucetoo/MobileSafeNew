@@ -15,6 +15,15 @@ public class AppInfo {
     private String packagename; //应用的报名。唯一标示
     private boolean inRom;  //是否安装到Rom
     private boolean userApp; // 是否是用户的app
+    private int userId; //用户的ID 用于获取数据流量
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     public Drawable getIcon() {
         return icon;

@@ -56,7 +56,7 @@
         <activity android:name=".EnterPwdActivity"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"/>
-
+        <activity android:name=".TrafficStatActivity"/>
         <service android:name=".service.CallSmsSafeService"/>
         <service android:name=".service.ScreenOffService"/>
         <service android:name=".service.WatchDogService"/>

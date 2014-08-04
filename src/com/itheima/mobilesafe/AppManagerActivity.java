@@ -424,9 +424,9 @@ public class AppManagerActivity extends Activity implements View.OnClickListener
 
     /*  android:installLocation="preferExternal" 安装的时候优先安装到外部存储*/
             if (appInfo.isInRom()) {
-                holder.tv_location.setText("Phone Rom");
+                holder.tv_location.setText("Phone Rom; "+"uid:"+appInfo.getUserId());
             } else {
-                holder.tv_location.setText("External SD");
+                holder.tv_location.setText("External SD; "+"uid:"+appInfo.getUserId());
             }
 
             //如果数据库中保存了该程序，这锁定

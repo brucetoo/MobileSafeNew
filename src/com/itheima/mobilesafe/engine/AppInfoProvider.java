@@ -26,17 +26,19 @@ public class AppInfoProvider {
      */
     public static List<AppInfo> getAppInfos(Context context) {
 
-        PackageManager pm = context.getPackageManager();
-        //获取包的名字 返回一个PackageInfo集合
-        List<PackageInfo> packageInfos = pm.getInstalledPackages(0);
-        List<AppInfo> appInfos = new ArrayList<AppInfo>();
-        //PackageInfo 相当于获取到清单文件
-        for (PackageInfo packageInfo : packageInfos) {
-            String packageName = packageInfo.packageName; //获取包名
+                PackageManager pm = context.getPackageManager();
+                //获取包的名字 返回一个PackageInfo集合
+                List<PackageInfo> packageInfos = pm.getInstalledPackages(0);
+                List<AppInfo> appInfos = new ArrayList<AppInfo>();
+                //PackageInfo 相当于获取到清单文件
+                for (PackageInfo packageInfo : packageInfos) {
+                    String packageName = packageInfo.packageName; //获取包名
             Drawable icon = packageInfo.applicationInfo.loadIcon(pm); //获取Icon
             String name = packageInfo.applicationInfo.loadLabel(pm).toString();//获取名字
-
+            int uid = packageInfo.applicationInfo.uid; //获取用户ID
             AppInfo appInfo = new AppInfo();
+
+            appInfo.setUserId(uid);
             int flag = packageInfo.applicationInfo.flags;//获取应用程序的标示
              /*  android:installLocation="preferExternal" 安装的时候优先安装到外部存储*/
             if ((flag & ApplicationInfo.FLAG_SYSTEM) == 0) {
