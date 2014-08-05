@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
-
+    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="com.itheima.mobilesafe" />
@@ -58,6 +58,8 @@
             android:excludeFromRecents="true"/>
         <activity android:name=".TrafficStatActivity"/>
         <activity android:name=".AntVirusActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity android:name=".CleanCacheActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
         <service android:name=".service.CallSmsSafeService"/>
         <service android:name=".service.ScreenOffService"/>

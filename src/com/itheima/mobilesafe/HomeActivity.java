@@ -77,6 +77,10 @@ public class HomeActivity extends Activity {
                         intent = new Intent(HomeActivity.this, AntVirusActivity.class);
                         startActivity(intent);
                         break;
+                    case 6://缓存清理
+                        intent = new Intent(HomeActivity.this, CleanCacheActivity.class);
+                        startActivity(intent);
+                        break;
                     case 0: //进入防盗设置
                         showLastFoundDialog();
                         break;
