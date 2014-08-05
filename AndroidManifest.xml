@@ -57,6 +57,7 @@
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"/>
         <activity android:name=".TrafficStatActivity"/>
+        <activity android:name=".AntVirusActivity"/>
         <service android:name=".service.CallSmsSafeService"/>
         <service android:name=".service.ScreenOffService"/>
         <service android:name=".service.WatchDogService"/>

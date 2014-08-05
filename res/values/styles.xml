@@ -50,5 +50,9 @@
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentBottom">true</item>
     </style>
-
+ <style name="pb_style" parent="android:style/Widget.ProgressBar.Horizontal">
+     <item name="android:progressDrawable" >
+         @drawable/progress_horizontal
+     </item>
+ </style>
 </resources>
