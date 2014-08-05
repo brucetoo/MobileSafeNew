@@ -52,7 +52,8 @@ public class SplashActivity extends Activity {
         tv_update_info = (TextView) findViewById(R.id.tv_update_info);
         boolean update = sp.getBoolean("update", false);
 
-        copyDB();
+        copyDB("address.db");
+        copyDB("antivirus.db");
 
         if (update) {
             // ¼ì²éÉý¼¶
@@ -76,11 +77,11 @@ public class SplashActivity extends Activity {
         findViewById(R.id.rl_root_splash).startAnimation(aa);
     }
 
-    private void copyDB() {
+    private void copyDB(String filepath) {
         try {
-            File file = new File(getFilesDir(), "address.db");
+            File file = new File(getFilesDir(), filepath);
             if(!file.exists() && file.length()<=0){
-                InputStream in = getAssets().open("address.db");
+                InputStream in = getAssets().open(filepath);
 
                 FileOutputStream out = new FileOutputStream(file);
                 byte[] buffer = new byte[1024];
@@ -114,18 +115,18 @@ public class SplashActivity extends Activity {
 
                 case URL_ERROR:// URL´íÎó
                     enterHome();
-                    Toast.makeText(getApplicationContext(), "URL´íÎó", 0).show();
+                    Toast.makeText(getApplicationContext(), "URL´íÎó", Toast.LENGTH_SHORT).show();
 
                     break;
 
                 case NETWORK_ERROR:// ÍøÂçÒì³£
                     enterHome();
-                    Toast.makeText(SplashActivity.this, "ÍøÂçÒì³£", 0).show();
+                    Toast.makeText(SplashActivity.this, "ÍøÂçÒì³£", Toast.LENGTH_SHORT).show();
                     break;
 
                 case JSON_ERROR:// JSON½âÎö³ö´í
                     enterHome();
-                    Toast.makeText(SplashActivity.this, "JSON½âÎö³ö´í", 0).show();
+                    Toast.makeText(SplashActivity.this, "JSON½âÎö³ö´í", Toast.LENGTH_SHORT).show();
                     break;
 
                 default:
