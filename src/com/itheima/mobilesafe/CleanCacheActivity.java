@@ -1,7 +1,9 @@
 package com.itheima.mobilesafe;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.*;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.format.Formatter;
@@ -50,7 +52,7 @@ public class CleanCacheActivity extends Activity {
                         //反射方法的调用
                         //需要加入权限
                         // <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
-                        Method method = PackageManager.class.getMethod("getPackageSizeInfo",String.class,IPackageStatsObserver.class);
+                        Method method = PackageManager.class.getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
                         method.invoke(pm, info.packageName, new DataObserver());
                         Thread.sleep(100);
                     } catch (Exception e) {
@@ -69,9 +71,37 @@ public class CleanCacheActivity extends Activity {
         }.start();
     }
 
-
+    /**
+     * 清除所有缓存  利用了android的漏洞：内存暂用太多，通知系统清理内存
+     * @param view
+     */
     public void cleanAll(View view) {
-        Toast.makeText(getApplicationContext(), "sssssss", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getApplicationContext(), "sssssss", Toast.LENGTH_SHORT).show();
+
+        Method[] methods = PackageManager.class.getMethods();
+        for(Method method:methods){
+            if("freeStorageAndNotify".equals(method.getName())){
+                try {
+                    method.invoke(pm, Integer.MAX_VALUE, new IPackageDataObserver.Stub() {
+                        @Override
+                        public void onRemoveCompleted(String packageName,
+                                                      boolean succeeded) throws RemoteException {
+                            System.out.println("---------------------------------------"+succeeded);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ll_container.removeAllViews();
+                                    Toast.makeText(getApplicationContext(),"Clear done!",Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -85,7 +115,7 @@ public class CleanCacheActivity extends Activity {
             final long cacheSize = pStats.cacheSize;  //缓存大小
             long dataSize = pStats.dataSize;    //数据大小
             long codeSize = pStats.codeSize;    //代码大小
-            String packname = pStats.packageName;//包名
+            final String packname = pStats.packageName;//包名
             System.out.println("codeSize = " + codeSize);
             try {
                 final ApplicationInfo info = pm.getApplicationInfo(packname, 0);
@@ -104,6 +134,28 @@ public class CleanCacheActivity extends Activity {
                             iv_icon.setImageDrawable(info.loadIcon(pm));
                             tv_name.setText(info.loadLabel(pm));
                             tv_cache.setText("cache:" + Formatter.formatFileSize(getApplicationContext(), cacheSize));
+                            ImageView iv_delete = (ImageView) view.findViewById(R.id.iv_delete);
+                            //点击进入系统设置界面单独清除缓存
+                            //原因是缓存的清除只能是系统应用才能完成，加上权限普通应用也不能清除缓存
+                            iv_delete.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    //deleteApplicationCacheFiles
+                                    try {
+                                        //通过反射调用隐藏的远程服务方法，
+                                        Method method = PackageManager.class.getMethod("deleteApplicationCacheFiles", String.class, IPackageDataObserver.class);
+                                        method.invoke(pm,packname,new StatsObserver());
+                                    } catch (Exception e) {
+                                        //此处调用方法是会抛出异常，再次启动系统的界面去清除缓存
+                                        Intent intent = new Intent();
+                                        intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                                        intent.setData(Uri.parse("package:" + packname));
+                                        startActivity(intent);
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                             ll_container.addView(view, 0);
                         }
                     }
@@ -113,6 +165,17 @@ public class CleanCacheActivity extends Activity {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    /**
+     * 清除缓存后调用该方法
+     */
+    class StatsObserver extends IPackageDataObserver.Stub {
+
+        @Override
+        public void onRemoveCompleted(String packageName, boolean succeeded) throws RemoteException {
+            System.out.println("---------------------------------"+packageName+" is ----"+succeeded);
         }
     }
 
